@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29911.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "webapitoken", "webapitoken\webapitoken.csproj", "{11EC5950-8192-4E51-BEA5-AAF20353D831}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{11EC5950-8192-4E51-BEA5-AAF20353D831}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11EC5950-8192-4E51-BEA5-AAF20353D831}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11EC5950-8192-4E51-BEA5-AAF20353D831}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11EC5950-8192-4E51-BEA5-AAF20353D831}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EFAD9167-1686-4BC9-B48B-2F9193E4EDA7}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+</head>
+<body style="padding-top:20px">
+        <input id="btnLogoff" class="btn btn-primary float-right" type="button" value="Log Out"/>
+    <div class="col-md-10 col-md-offset-1">
+        <div class="well">
+            <!--This table contains the fields that we want to capture to register a new user-->
+            
+            <form id="form1" action="#" method="PUT" >
+            <table class="table">
+                <thead>
+                    <tr class="success">
+                        <th colspan="2">
+                            Create new product
+                            <input onclick="window.location.href = 'GetAll.html'" class="btn btn-primary float-right" type="button" value="Back"/>
+                       
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Name</td>
+                        <td><input class="form-control" type="text" name="Name" id="txtName" placeholder="product name" /> </td>
+                    </tr>
+                    <tr>
+                        <td>Price</td>
+                        <td><input class="form-control" type="text" id="price"
+                                    /></td>
+                    </tr>
+                    <tr>
+                        <td>Quantity</td>
+                        <td><input class="form-control" type="number" id="Quantity" /></td>
+                    </tr>
+                    <tr class="success">
+                        <td colspan="2">
+                            <input type="submit"  class="btn btn-primary" value="Update Product" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </form>
+            <!--Bootstrap modal dialog that shows up when regsitration is successful-->
+            <div class="modal fade" tabindex="-1" id="successModal"
+                 data-keyboard="false" data-backdrop="static">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">
+                                &times;
+                            </button>
+                           
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <h2 class="modal-title">Product Updated Successfuly!</h2>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary"
+                                    data-dismiss="modal">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Bootstrap alert to display any validation errors-->
+            <div id="divError" class="alert alert-danger collapse">
+
+ 
+                <a id="linkClose" href="#" class="close">&times;</a>
+                <div id="divErrorText"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+       
+        $(document).ready(function () {
+            if (sessionStorage.getItem('accessToken') == null) {
+                window.location.href = "Login.html";
+            }
+            $('#btnLogoff').click(function () {
+                sessionStorage.removeItem('accessToken');
+                window.location.href = "Login.html";
+            });
+
+            //Close the bootstrap alert
+            $('#linkClose').click(function () {
+                $('#divError').hide('fade');
+            });
+
+            $.ajax({
+                    url: 'http://localhost:51170/api/Products/'+sessionStorage.getItem("ID")+'',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer '
+                            + sessionStorage.getItem("accessToken"),
+                            contentType: 'application/json'
+                    },
+                    success: function (data) {
+                        $('#txtName').val(data.Name);
+                        $('#price').val(data.Price);
+                        $('#Quantity').val(data.Quantity);
+                    },
+                    error: function (jqXHR) {
+                        $('#divErrorText').text(jqXHR.responseText);
+                        $('#divError').show('fade');
+                    }
+                });
+
+            $("#form1").submit(function(e) {
+                e.preventDefault();
+                $('#divError').hide('fade');
+                $.ajax({
+                    url: 'http://localhost:51170/api/Products/'+sessionStorage.getItem("ID")+'',
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer '
+                            + sessionStorage.getItem("accessToken"),
+                            contentType: 'application/json'
+                    },
+                    data: {
+                        Id:sessionStorage.getItem("ID"),
+                        Name: $('#txtName').val(),
+                        Price: $('#price').val(),
+                        Quantity: $('#Quantity').val()
+                    }
+                    ,
+                    type:"json"
+                    ,
+                    success: function () {
+                        $('#successModal').modal('show');
+                    },
+                    error: function (jqXHR) {
+                        $('#divErrorText').text(jqXHR.responseText);
+                        $('#divError').show('fade');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+        

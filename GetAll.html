@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body style="padding-top:20px">
+    <div class="col-md-10 col-md-offset-1">
+        <div class="well">
+            <input id="btnLoadProducts" class="btn btn-primary" type="button" value="Show Products" />
+            <input onclick="window.location.href = 'AddProduct.html'" class="btn btn-primary" type="button" value="Add New Product"
+            />
+            <input id="btnLogoff" class="btn btn-primary" type="button" value="Log Out" />
+        </div>
+        <div id="divData" class="well hidden">
+            <table class="table" id="tblData">
+                <thead>
+                    <tr class="success">
+                        <td>Product Code</td>
+                        <td>Name</td>
+                        <td>Price</td>
+                        <td>Quantity</td>
+                    </tr>
+                </thead>
+                <tbody id="tblBody"></tbody>
+            </table>
+        </div>
+        <div class="modal fade" tabindex="-1" id="errorModal" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            &times;
+                        </button>
+                        <h4 class="modal-title">Session Expired</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <h2 class="modal-title">Close this message to login again</h2>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divError" class="alert alert-danger collapse">
+            <a id="linkClose" href="#" class="close">&times;</a>
+            <div id="divErrorText"></div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" id="successModal"
+    data-keyboard="false" data-backdrop="static">
+   <div class="modal-dialog modal-sm">
+       <div class="modal-content">
+           <div class="modal-header">
+               <button type="button" class="close" data-dismiss="modal">
+                   &times;
+               </button>
+             
+           </div>
+           <div class="modal-body">
+               <form>
+                   <h2 class="modal-title">Deleted</h2>
+               </form>
+           </div>
+           <div class="modal-footer">
+               <button type="button" class="btn btn-primary"
+                       data-dismiss="modal">
+                   Close
+               </button>
+           </div>
+       </div>
+   </div>
+</div>
+
+    <script type="text/javascript">
+           function details(id)
+            {
+                sessionStorage.setItem("ID",id);
+                window.location.href = "GetOne.html";
+            }
+            function edit(id)
+            {
+                sessionStorage.setItem("ID",id);
+                window.location.href = "UpdateProduct.html";
+            }
+            function delete_product(id)
+            {
+                $.ajax({
+                    url: 'http://localhost:51170/api/Products/'+id+'',
+                    method: 'Delete',
+                    headers: {
+                        'Authorization': 'Bearer '
+                            + sessionStorage.getItem("accessToken"),
+                            contentType: 'application/json'
+                    },
+                    success: function () {
+                        $('#successModal').modal('show');
+                        $('#btnLoadProducts').trigger("click");
+                    },
+                    error: function (jqXHR) {
+                        $('#divErrorText').text(jqXHR.responseText);
+                        $('#divError').show('fade');
+                    }
+                }); 
+            }
+        $(document).ready(function () {
+            if (sessionStorage.getItem('accessToken') == null) {
+                window.location.href = "Login.html";
+            }
+            $('#btnLogoff').click(function () {
+                sessionStorage.removeItem('accessToken');
+                window.location.href = "Login.html";
+            });
+
+            $('#linkClose').click(function () {
+                $('#divError').hide('fade');
+            });
+
+            $('#errorModal').on('hidden.bs.modal', function () {
+                window.location.href = "Login.html";
+            });
+
+            $('#btnLoadProducts').click(function () {
+                $.ajax({
+                    url: 'http://localhost:51170/api/products',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer '
+                            + sessionStorage.getItem("accessToken")
+                    },
+                    success: function (data) {
+                        $('#divData').removeClass('hidden');
+                        $('#tblBody').empty();
+                        $.each(data, function (index, value) {
+                            var row = $('<tr><td>' + value.Id + '</td><td>'
+                                + value.Name + '</td><td>'
+                                + value.Price + '</td><td>'
+                                + value.Quantity + 
+                                '</td><td> <input onclick="details('+value.Id+')" class="btn btn-primary " type="button" value="Details" />'
+                                +'</td><td>'
+                                +'<input onclick="edit('+value.Id+')" class="btn btn-primary " type="button" value="Edit" />'
+                                +'</td><td><input onclick="delete_product('+value.Id+')" class="btn btn-primary " type="button" value="Delete" /></td></tr>');
+                            $('#tblData').append(row);
+                        });
+                    },
+                    error: function (jQXHR) {
+                        // If status code is 401, access token expired, so
+                        // redirect the user to the login page
+                        if (jQXHR.status == "401") {
+                            $('#errorModal').modal('show');
+                        }
+                        else {
+                            $('#divErrorText').text(jqXHR.responseText);
+                            $('#divError').show('fade');
+                        }
+                    }
+                });   
+            });
+     
+        });
+    </script>
+</body>
+
+</html>
